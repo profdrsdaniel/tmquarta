@@ -1,5 +1,6 @@
 package br.com.ulbra.exemplorecycler.data
 
+import br.com.ulbra.exemplorecycler.data.database.ProductEntity
 import java.io.Serializable
 
 data class Product(
@@ -7,3 +8,6 @@ data class Product(
     val name: String,
     val price: String
 ): Serializable
+
+fun Product.convertToEntity() =
+    ProductEntity(name = this.name, price = this.price, urlImg = this.urlImage)

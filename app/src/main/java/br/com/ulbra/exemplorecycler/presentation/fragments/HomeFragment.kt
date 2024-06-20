@@ -5,42 +5,67 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
-import br.com.ulbra.exemplorecycler.presentation.viewmodels.MainViewModel
 import br.com.ulbra.exemplorecycler.data.Product
 import br.com.ulbra.exemplorecycler.presentation.adapters.ProductAdapter
 import br.com.ulbra.exemplorecycler.R
-import br.com.ulbra.exemplorecycler.configureToolbar
+import br.com.ulbra.exemplorecycler.commons.Resultado
+import br.com.ulbra.exemplorecycler.databinding.FragmentHomeBinding
+import br.com.ulbra.exemplorecycler.presentation.viewmodels.ProductViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
+
+    private lateinit var adapter: ProductAdapter
+    private lateinit var binding: FragmentHomeBinding
+    private val mainViewModel: ProductViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-
-        (requireActivity() as AppCompatActivity).configureToolbar("Home", false)
-
-        val adapter = ProductAdapter(list = mainViewModel.getProducts(),
+        adapter = ProductAdapter(
             goToDetails = ::goToDetail,
-            removeItem = { mainViewModel.removeItem(it) }
+            removeItem = {
+//                mainViewModel.removeItem(it)
+            }
         )
 
-        val recycler = view.findViewById<RecyclerView>(R.id.rcProduct)
+        observers()
+        mainViewModel.getProducts()
 
-        recycler.adapter = adapter
+        binding.rcProduct.adapter = adapter
+    }
+
+    private fun observers() {
+        mainViewModel.products.observe(viewLifecycleOwner) { resultadoObservado ->
+            when (resultadoObservado) {
+                is Resultado.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.rcProduct.visibility = View.GONE
+                }
+                is Resultado.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.rcProduct.visibility = View.VISIBLE
+                    adapter.setUpList(resultadoObservado.data)
+                }
+                is Resultado.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                }
+            }
+        }
     }
 
 

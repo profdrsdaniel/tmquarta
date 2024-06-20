@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/add"
         android:name="br.com.ulbra.exemplorecycler.presentation.fragments.AdicionarFragment"
-        android:label="fragment_adicionar"
+        android:label="Adicionar Produto"
         tools:layout="@layout/fragment_adicionar" >
         <action
             android:id="@+id/action_adicionarFragment_to_homeFragment"
@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/home"
         android:name="br.com.ulbra.exemplorecycler.presentation.fragments.HomeFragment"
-        android:label="fragment_home"
+        android:label="Inicio"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_produtoDetalheActivity"
@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_homeFragment_to_adicionarFragment"
             app:destination="@id/add" />
+        <action
+            android:id="@+id/action_home_to_produtoDetalheActivity"
+            app:destination="@id/produtoDetalheActivity" />
     </fragment>
     <activity
         android:id="@+id/produtoDetalheActivity"

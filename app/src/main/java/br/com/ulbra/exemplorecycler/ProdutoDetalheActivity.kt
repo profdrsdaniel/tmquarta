@@ -7,19 +7,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import br.com.ulbra.exemplorecycler.data.Product
+import br.com.ulbra.exemplorecycler.databinding.ActivityProdutoDetalheBinding
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 
 @Suppress("DEPRECATION")
+@AndroidEntryPoint
 class ProdutoDetalheActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityProdutoDetalheBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_produto_detalhe)
+        binding = ActivityProdutoDetalheBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-
-        setSupportActionBar(toolbar).apply {
-            title = "Detalhe"
-        }
+        setSupportActionBar(binding.toolbar)
+        configureToolbar("Product Detalhe", true)
 
         val productBundle = if (Build.VERSION.SDK_INT >= 33) {
             intent?.getSerializableExtra("data", Product::class.java)
@@ -27,17 +29,9 @@ class ProdutoDetalheActivity : AppCompatActivity() {
             intent?.getSerializableExtra("data") as? Product
         }
 
-        val productName = findViewById<TextView>(R.id.tvProductName)
-        val productPrice = findViewById<TextView>(R.id.tvProductPrice)
-        val productImg = findViewById<ImageView>(R.id.imgProduct)
+        productBundle?.let {
+            binding.produto = it
+        }
 
-        productName.text = productBundle?.name
-        productPrice.text = productBundle?.price
-
-        Glide
-            .with(this)
-            .load(productBundle?.urlImage)
-            .into(productImg)
     }
-
 }
